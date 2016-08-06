@@ -41,15 +41,15 @@ $(document).ready(function () {
   function handlerFactory(key) {
     // function factory branching pattern
     if (!isNaN(key)) { // check if key is a numeric string, e.g. isNaN('1') returns false, isNaN('.') returns true
-      return function (event) {
-        expression += event.data.value;
+      return function () {
+        expression += key;
         updateResults(expression);
       };
     } else if (key === '.') {
-      return function (event) {
+      return function () {
         if (!decimalInExp) { // allow only one decimal point per expression
           decimalInExp = true;
-          expression += event.data.value;
+          expression += key;
           updateResults(expression);
         }
       };
@@ -61,8 +61,8 @@ $(document).ready(function () {
   
   for (key in buttonDict) {
     if (buttonDict.hasOwnProperty(key)) {
-      // .click([eventData], handler) pattern to allow for frozen 'key'
-      buttonDict[key].click({ value: key }, handlerFactory(key)); // handlerFactory applied to return a handler function according to the key
+      // key is stored in closure with handlerFactory(key)
+      buttonDict[key].click(handlerFactory(key)); // handlerFactory applied to return a handler function according to the key
     }
   }
   
