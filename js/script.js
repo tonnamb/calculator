@@ -24,7 +24,8 @@ $(document).ready(function () {
                   '+': $('#plus'),
                   '-': $('#minus'),
                   '/': $('#divide'),
-                  '*': $('#times')},
+                  '*': $('#times'),
+                  'enter': $('#enter')},
     keyCodeDict = {},
     expression = '',
     working = '',
@@ -43,6 +44,8 @@ $(document).ready(function () {
   keyCodeDict[45] = '-';
   keyCodeDict[47] = '/';
   keyCodeDict[42] = '*';
+  keyCodeDict[13] = 'enter';
+  keyCodeDict[61] = 'enter';
 
   /* Function declarations
   ======================================== */
@@ -74,13 +77,30 @@ $(document).ready(function () {
     return returnVal;
   }
 
+  function evalResults() {
+    decimalInExp = false; // reset decimalInExp
+    currentEx = parseInt(expression, 10);
+
+    // Update results
+    if (operator) {
+      currentCal = applyOperator(currentCal, operator, currentEx);
+      updateResults(currentCal);
+    } else {
+      currentCal = currentEx;
+      updateResults('');
+    }
+
+  }
+
   function handlerFactory(key) {
     // function factory branching pattern
+    // Number buttons
     if (!isNaN(key)) { // check if key is a numeric string, e.g. isNaN('1') returns false, isNaN('.') returns true
       return function () {
         expression += key;
         updateResults(expression);
       };
+    // decimal point button
     } else if (key === '.') {
       return function () {
         if (!decimalInExp) { // allow only one decimal point per expression
@@ -89,21 +109,12 @@ $(document).ready(function () {
           updateResults(expression);
         }
       };
+    // operator buttons
     } else if (['+', '-', '/', '*'].indexOf(key) !== -1) {
       return function () {
         if (expression) { // Don't do operations if expression is empty, i.e. right after operator is applied
 
-          decimalInExp = false; // reset decimalInExp
-          currentEx = parseInt(expression, 10);
-
-          // Update results
-          if (operator !== '') {
-            currentCal = applyOperator(currentCal, operator, currentEx);
-            updateResults(currentCal);
-          } else {
-            currentCal = currentEx;
-            updateResults('');
-          }
+          evalResults();
 
           operator = key; // Assign up-coming operator
 
@@ -132,6 +143,21 @@ $(document).ready(function () {
 
           updateWorkings(working);
 
+        }
+      };
+    // enter button
+    } else if (key === 'enter') {
+      return function () {
+        if (expression) { // Don't do evaluation if expression is empty, i.e. right after operator is applied
+          if (operator) {
+            evalResults();
+            operator = '';
+            working += ' ' + expression + ' =';
+            updateWorkings(working);
+          } else {
+            updateResults(currentCal);
+          }
+          expression = '';
         }
       };
     }
