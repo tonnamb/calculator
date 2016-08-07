@@ -25,7 +25,9 @@ $(document).ready(function () {
                   '-': $('#minus'),
                   '/': $('#divide'),
                   '*': $('#times'),
-                  'enter': $('#enter')},
+                  'enter': $('#enter'),
+                  'ce': $('#ce'),
+                  'ac': $('#ac')},
     keyCodeDict = {},
     expression = '',
     working = '',
@@ -97,9 +99,11 @@ $(document).ready(function () {
     // 1-9 buttons
     if (!isNaN(key) && key !== '0') { // check if key is a numeric string, e.g. isNaN('1') returns false, isNaN('.') returns true
       return function () {
+        buttonDict[key].blur(); // Unfocus button when clicked to prevent side-effects when use 'enter' key
         expression += key;
         updateResults(expression);
         if (operator === '=') { // right after pressing enter, entering numbers = intend to start new calculation
+          decimalInExp = false;
           operator = '';
           working = '';
           currentCal = 0;
@@ -109,6 +113,7 @@ $(document).ready(function () {
     // 0 button
     } else if (key === '0') {
       return function () {
+        buttonDict[key].blur();
         if (expression) { // Do nothing if expression is empty
           expression += key;
           updateResults(expression);
@@ -117,51 +122,70 @@ $(document).ready(function () {
     // decimal point button
     } else if (key === '.') {
       return function () {
+        buttonDict[key].blur();
         if (!decimalInExp) { // allow only one decimal point per expression
           decimalInExp = true;
           expression += key;
           updateResults(expression);
         }
       };
+    // ce button
+    } else if (key === 'ce') {
+      return function () {
+        buttonDict[key].blur();
+        decimalInExp = false;
+        expression = '';
+        updateResults('0');
+      };
+    // ac button
+    } else if (key === 'ac') {
+      return function () {
+        buttonDict[key].blur();
+        decimalInExp = false;
+        expression = '';
+        operator = '';
+        working = '';
+        currentCal = 0;
+        updateResults('0');
+        updateWorkings(working);
+      }
     // operator buttons
     } else if (['+', '-', '/', '*'].indexOf(key) !== -1) {
       return function () {
+        buttonDict[key].blur();
         if (expression) { // Don't do operations if expression is empty, i.e. right after operator is applied
 
           evalResults();
-
-          operator = key; // Assign up-coming operator
-
           // Update workings
-          if (['/', '*'].indexOf(operator) !== -1) {
+          if (['/', '*'].indexOf(key) !== -1 &&
+              operator) { // don't add brackets when currentCal is still zero
             // Add brackets to working for mathematical correctness
             working = ' ( ' + working + ' ' + expression + ' ) ' + key;
-          } else {
+          } else if (operator) {
             working += ' ' + expression + ' ' + key;
+          } else {
+            working += expression + ' ' + key;
           }
+          operator = key; // Assign up-coming operator
           updateWorkings(working);
-
           expression = ''; // Clear expression
 
         } else if (currentCal !== 0) { // Change operator in action if expression is empty and currentCal is not zero i.e. something is operable
-
           operator = key;
           working = working.slice(0, -1);
-
           if (['/', '*'].indexOf(operator) !== -1 && // Add brackets if operator is * or /
               working.slice(-2, -1) !== ')') { // In the case that brackets are already added
             working = '( ' + working + ') ' + key;
           } else {
             working += key;
           }
-
           updateWorkings(working);
-
         }
       };
     // enter button
     } else if (key === 'enter') {
       return function () {
+        buttonDict[key].blur();
         if (expression && operator) { // Don't do evaluation if expression is empty, i.e. right after operator is applied
           evalResults();
           operator = '=';
