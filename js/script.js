@@ -85,7 +85,7 @@ $(document).ready(function () {
     if (operator) {
       currentCal = applyOperator(currentCal, operator, currentEx);
       updateResults(currentCal);
-    } else {
+    } else { // Case: initial number before operator is assigned
       currentCal = currentEx;
       updateResults('');
     }
@@ -94,11 +94,25 @@ $(document).ready(function () {
 
   function handlerFactory(key) {
     // function factory branching pattern
-    // Number buttons
-    if (!isNaN(key)) { // check if key is a numeric string, e.g. isNaN('1') returns false, isNaN('.') returns true
+    // 1-9 buttons
+    if (!isNaN(key) && key !== '0') { // check if key is a numeric string, e.g. isNaN('1') returns false, isNaN('.') returns true
       return function () {
         expression += key;
         updateResults(expression);
+        if (operator === '=') { // right after pressing enter, entering numbers = intend to start new calculation
+          operator = '';
+          working = '';
+          currentCal = 0;
+          updateWorkings(working);
+        }
+      };
+    // 0 button
+    } else if (key === '0') {
+      return function () {
+        if (expression) { // Do nothing if expression is empty
+          expression += key;
+          updateResults(expression);
+        }
       };
     // decimal point button
     } else if (key === '.') {
@@ -129,7 +143,7 @@ $(document).ready(function () {
 
           expression = ''; // Clear expression
 
-        } else { // Change operator in action if expression is empty
+        } else if (currentCal !== 0) { // Change operator in action if expression is empty and currentCal is not zero i.e. something is operable
 
           operator = key;
           working = working.slice(0, -1);
@@ -148,15 +162,11 @@ $(document).ready(function () {
     // enter button
     } else if (key === 'enter') {
       return function () {
-        if (expression) { // Don't do evaluation if expression is empty, i.e. right after operator is applied
-          if (operator) {
-            evalResults();
-            operator = '';
-            working += ' ' + expression + ' =';
-            updateWorkings(working);
-          } else {
-            updateResults(currentCal);
-          }
+        if (expression && operator) { // Don't do evaluation if expression is empty, i.e. right after operator is applied
+          evalResults();
+          operator = '=';
+          working += ' ' + expression + ' =';
+          updateWorkings(working);
           expression = '';
         }
       };
