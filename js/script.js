@@ -48,6 +48,7 @@ $(document).ready(function () {
   keyCodeDict[42] = '*';
   keyCodeDict[13] = 'enter';
   keyCodeDict[61] = 'enter';
+  keyCodeDict[8] = 'ce';
 
   /* Function declarations
   ======================================== */
@@ -89,7 +90,7 @@ $(document).ready(function () {
       updateResults(currentCal);
     } else { // Case: initial number before operator is assigned
       currentCal = currentEx;
-      updateResults('');
+      updateResults('0');
     }
 
   }
@@ -107,7 +108,7 @@ $(document).ready(function () {
           operator = '';
           working = '';
           currentCal = 0;
-          updateWorkings(working);
+          updateWorkings('');
         }
       };
     // decimal point button
@@ -138,7 +139,7 @@ $(document).ready(function () {
         working = '';
         currentCal = 0;
         updateResults('0');
-        updateWorkings(working);
+        updateWorkings('');
       };
     // operator buttons
     } else if (['+', '-', '/', '*'].indexOf(key) !== -1) {
@@ -203,9 +204,18 @@ $(document).ready(function () {
 
   $(document).keypress(function (event) {
     var keyCode = event.keyCode;
-    // console.log(keyCode);
     if (keyCodeDict.hasOwnProperty(keyCode)) { // Check if keyCode is in keyCodeDict
       buttonDict[keyCodeDict[keyCode]].click();
+    }
+  });
+
+  /* Prevent default action for backspace
+  ======================================== */
+
+  $(document).bind("keydown", function (e) {
+    if (e.which === 8) { // 8 = backspace
+      e.preventDefault();
+      buttonDict.ce.click();
     }
   });
 

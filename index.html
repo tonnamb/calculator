@@ -15,12 +15,13 @@
 
   <!-- FONT
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
 
   <!-- CSS
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/styles.css">
 
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -46,7 +47,7 @@
     <section class="display-section">
       <div class="container">
         <p id="results">0</p>
-        <p id="workings"></p>
+        <p>> <span id="workings"></span></p>
       </div>
     </section>
 
@@ -55,15 +56,15 @@
     <section class="buttons-section">
       <div class="container">
         <div class="row">
-          <div class="three columns"><button id="ac">AC</button></div>
-          <div class="six columns"><button id="ce">CE</button></div>
-          <div class="three columns"><button id="divide">&div;</button></div>
+          <div class="six columns"><button id="ac">AC</button></div>
+          <div class="three columns"><button id="ce">CE</button></div>
+          <div class="three columns"><button id="divide">/</button></div>
         </div>
         <div class="row">
           <div class="three columns"><button id="seven">7</button></div>
           <div class="three columns"><button id="eight">8</button></div>
           <div class="three columns"><button id="nine">9</button></div>
-          <div class="three columns"><button id="times">&times;</button></div>
+          <div class="three columns"><button id="times">*</button></div>
         </div>
         <div class="row">
           <div class="three columns"><button id="four">4</button></div>
@@ -78,8 +79,8 @@
           <div class="three columns"><button id="plus">+</button></div>
         </div>
         <div class="row">
-          <div class="three columns"><button id="zero">0</button></div>
-          <div class="six columns"><button id="dot">.</button></div>
+          <div class="six columns"><button id="zero">0</button></div>
+          <div class="three columns"><button id="dot">.</button></div>
           <div class="three columns"><button id="enter">Enter</button></div>
         </div>
       </div>
@@ -90,7 +91,7 @@
   <!-- Footer
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-  <footer class="footer-section">
+  <footer>
     <div class="container">
       <p>Code written by <a href="https://tonnamb.github.io" target="_blank">Tonnam Balankura</a></p>
       <p>Technology used: normalize.css, skeleton.css and jquery-3.1.0.js.</p>
