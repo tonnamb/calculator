@@ -81,7 +81,7 @@ $(document).ready(function () {
 
   function evalResults() {
     decimalInExp = false; // reset decimalInExp
-    currentEx = parseInt(expression, 10);
+    currentEx = parseFloat(expression, 10);
 
     // Update results
     if (operator) {
@@ -97,7 +97,7 @@ $(document).ready(function () {
   function handlerFactory(key) {
     // function factory branching pattern
     // 1-9 buttons
-    if (!isNaN(key) && key !== '0') { // check if key is a numeric string, e.g. isNaN('1') returns false, isNaN('.') returns true
+    if (!isNaN(key) && key) { // check if key is a numeric string, e.g. isNaN('1') returns false, isNaN('.') returns true
       return function () {
         buttonDict[key].blur(); // Unfocus button when clicked to prevent side-effects when use 'enter' key
         expression += key;
@@ -108,15 +108,6 @@ $(document).ready(function () {
           working = '';
           currentCal = 0;
           updateWorkings(working);
-        }
-      };
-    // 0 button
-    } else if (key === '0') {
-      return function () {
-        buttonDict[key].blur();
-        if (expression) { // Do nothing if expression is empty
-          expression += key;
-          updateResults(expression);
         }
       };
     // decimal point button
@@ -148,7 +139,7 @@ $(document).ready(function () {
         currentCal = 0;
         updateResults('0');
         updateWorkings(working);
-      }
+      };
     // operator buttons
     } else if (['+', '-', '/', '*'].indexOf(key) !== -1) {
       return function () {
@@ -160,11 +151,11 @@ $(document).ready(function () {
           if (['/', '*'].indexOf(key) !== -1 &&
               operator) { // don't add brackets when currentCal is still zero
             // Add brackets to working for mathematical correctness
-            working = ' ( ' + working + ' ' + expression + ' ) ' + key;
+            working = ' ( ' + working + ' ' + currentEx + ' ) ' + key;
           } else if (operator) {
-            working += ' ' + expression + ' ' + key;
-          } else {
-            working += expression + ' ' + key;
+            working += ' ' + currentEx + ' ' + key;
+          } else { // case: no operator assigned yet, first number
+            working += currentEx + ' ' + key;
           }
           operator = key; // Assign up-coming operator
           updateWorkings(working);
@@ -189,7 +180,7 @@ $(document).ready(function () {
         if (expression && operator) { // Don't do evaluation if expression is empty, i.e. right after operator is applied
           evalResults();
           operator = '=';
-          working += ' ' + expression + ' =';
+          working += ' ' + currentEx + ' =';
           updateWorkings(working);
           expression = '';
         }
